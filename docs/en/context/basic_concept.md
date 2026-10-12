@@ -6,7 +6,7 @@
     -  [Data Format](./data_format.md)
     -  [Non Contiguous Tensor](./non_contiguous_tensor.md)
     -  [Broadcast Relationship](./broadcast_relationship.md)
-    -  [Decuction Relationship](./decuction_relationship.md)
+    -  [Deduction Relationship](./deduction_relationship.md)
     -  [Conversion Relationship](./conversion_relationship.md)
     -  [Quant more Introduction](./quant_more_introduction.md)
     -  [Sparse Mode Introduction](./sparse_mode_introduction.md)
