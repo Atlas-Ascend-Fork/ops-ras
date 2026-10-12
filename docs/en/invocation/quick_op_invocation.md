@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Environment deployment: Before invoking an operator, complete the basic environment setup by following [Environment Deployment](../install/quick_install.md).
-- Operator invocation list: The operators available for invocation in the project are listed in [Operator List](../../zh/op_list.md), and the corresponding aclnn interfaces are listed in [aclnn List](../../zh/op_api_list.md).
+- Operator invocation list: The operators available for invocation in the project are listed in [Operator List](../../en/op_list.md), and the corresponding aclnn interfaces are listed in [aclnn List](../../en/op_api_list.md).
 - build.sh: Operator invocation depends on the build.sh script in the root directory. You can view the functions through the `bash build.sh --help` command. For parameter descriptions, refer to [build Parameter Description](../install/build.md).
 
 ## Source Code Compilation

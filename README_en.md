@@ -31,7 +31,7 @@ Note that to ensure smooth custom development of your source code, select the ma
 
 ## 🛠️Environment Setup
 
-[Environment Deployment](docs/zh/install/quick_install.md) is the prerequisite for experiencing the capabilities of this project. Please complete the NPU driver installation, CANN package installation, and so on to ensure the environment is normal.
+[Environment Deployment](docs/en/install/quick_install.md) is the prerequisite for experiencing the capabilities of this project. Please complete the NPU driver installation, CANN package installation, and so on to ensure the environment is normal.
 
 ## ⬇️Source Code Download
 
@@ -46,12 +46,12 @@ git clone -b 9.0.0 https://gitcode.com/cann/ops-ras.git
 
 ## 📖Learning Tutorials
 
-- [Quick Start](docs/QUICKSTART.md): Quickly experience the core basic capabilities of the project from scratch, covering source code compilation, operator invocation, development, debugging, and other operations.
-- [Advanced Tutorials](docs/README.md): If you need a deeper understanding of the project's compilation and deployment, operator invocation, development, debugging and tuning, and other capabilities, please refer to the documentation center for detailed guidance.
+- [Quick Start](docs/QUICKSTART_en.md): Quickly experience the core basic capabilities of the project from scratch, covering source code compilation, operator invocation, development, debugging, and other operations.
+- [Advanced Tutorials](docs/README_en.md): If you need a deeper understanding of the project's compilation and deployment, operator invocation, development, debugging and tuning, and other capabilities, please refer to the documentation center for detailed guidance.
 
 ## 💬Related Information
 
-- [Directory Structure](docs/zh/install/dir_structure.md)
+- [Directory Structure](docs/en/install/dir_structure.md)
 - [Contribution Guide](CONTRIBUTING.md)
 - [Security Statement](SECURITY.md)
 - [License](LICENSE)

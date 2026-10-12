@@ -4,7 +4,7 @@
 
 This guide aims to help you quickly get started with CANN and the `ops-ras` operator repository. To help you quickly understand the entire process of operator development, we will use the **AddExample** operator as a practical object. Its source code is located in `ops-ras/examples/add_example`. The operation process is as follows:
 
-1. **[Prerequisites](../README.md)**: Complete the environment setup and source code download by referring to the project README. The process is not repeated here. For the quick start scenario, **CANNLab or Docker deployment is recommended** for simple operation.
+1. **[Prerequisites](../README_en.md)**: Complete the environment setup and source code download by referring to the project README. The process is not repeated here. For the quick start scenario, **CANNLab or Docker deployment is recommended** for simple operation.
 
    > **Note**: The CANNLab or Docker environment provides the latest version of the CANN package by default. If you need to experience the latest capabilities of the master branch, you can manually set up the environment.
 
@@ -272,4 +272,4 @@ int main() {
 
 ## Conclusion
 
-After experiencing the above processes, you have basically completed the operator development process. If you want to further contribute new operators or learn more advanced development, debugging, and other skills, please visit the project README to learn about [Advanced Tutorials](../README.md#学习教程) and [Contribution Guide](../README.md#相关信息), and so on.
+After experiencing the above processes, you have basically completed the operator development process. If you want to further contribute new operators or learn more advanced development, debugging, and other skills, please visit the project README to learn about [Advanced Tutorials](../README_en.md#learning-tutorials) and [Contribution Guide](../README_en.md#related-information), and so on.
