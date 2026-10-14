@@ -69,7 +69,7 @@ $$
     <th>调用方式</th>
     <th>调用样例</th>
     <th>说明</th>
-  </tr><thrad>
+  </tr></thead>
   <tbody>
     <tr>
       <td>aclnn调用</td>

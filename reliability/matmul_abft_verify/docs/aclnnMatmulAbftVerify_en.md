@@ -3,7 +3,7 @@
 ## Product Support
 
 <!-- npu="950" id1 -->
-- <term>Ascend 950PR/Ascend 950DT</term>: Not supported
+- <term>Ascend 950PR&950DT系列产品</term>: Not supported
 <!-- end id1 -->
 <!-- npu="A3" id2 -->
 - <term>Atlas A3 Training Series/Atlas A3 Inference Series</term>: Supported

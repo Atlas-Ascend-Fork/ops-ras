@@ -2,9 +2,8 @@
 
 ## 产品支持情况
 
-
 <!-- npu="950" id1 -->
-- <term>Ascend 950PR/Ascend 950DT</term>：不支持
+- <term>Ascend 950PR&950DT系列产品</term>：不支持
 <!-- end id1 -->
 <!-- npu="A3" id2 -->
 - <term>Atlas A3 训练系列产品/Atlas A3 推理系列产品</term>：支持
@@ -33,6 +32,7 @@
 ## 函数原型
 
 每个算子分为两段式接口，必须先调用“aclnnCryptoGetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnCrypto”接口执行计算。
+
 ```c++
 aclnnStatus aclnnCryptoAicpuGetWorkspaceSize(
   const aclTensor      *key,

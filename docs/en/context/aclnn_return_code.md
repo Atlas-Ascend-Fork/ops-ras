@@ -1,7 +1,7 @@
 # aclnn Return Codes
 
 When calling aclnn APIs, common interface return codes are shown in [Table 1](#table1).
-For abnormal status code values, you can use the aclGetRecentErrMsg interface (refer to [ACL API (C)](https://www.hiascend.com/document/detail/en/canncommercial/latest/API/appdevgapi/aclcppdevg_03_0004.html)) to obtain exception information. You can troubleshoot the problem based on the error message or contact technical support.
+For abnormal status code values, you can use the aclGetRecentErrMsg interface (refer to [ACL API (C)](https://www.hiascend.com/document/detail/en/canncommercial/latest/API/appdevgapi/aclcppdevg_03_0004.html)) to obtain exception information. You can troubleshoot the problem based on the error message or submit issues.
 
 **Table 1**  Return Status Codes
 

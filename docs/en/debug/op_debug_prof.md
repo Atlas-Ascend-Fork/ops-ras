@@ -110,7 +110,7 @@ Common debugging methods are as follows:
 
 ## Performance Tuning
 
-### Method 1 (For Atlas A2/A3 Series Products)
+### Method 1 (For Atlas A2 Products/Atlas A3 Products)
 
 If execution accuracy degradation or abnormal memory usage occurs during operator execution, you can use the [msProf](https://www.hiascend.com/document/detail/en/CANNCommunityEdition/latest/devaids/optool/docs/en/quick_start/msopprof_quick_start.md) performance analysis tool to analyze the operator's performance metrics at each execution stage (such as throughput, memory usage, and latency), thereby identifying the root cause and performing targeted optimization.
 
@@ -165,7 +165,7 @@ This chapter uses the [AddExample custom operator](../../../examples/add_example
    The collection results are in the `$PWD/pipeline_auto/OPPROF_**` directory of this project.
    The pipeline-related file path is `OPPROF**/simulator/visualize_data.bin`, which can be viewed using the [mindStudio Insight](https://www.hiascend.com/document/detail/en/mindstudio/latest/visualization_tool/MindStudioInsight/docs/en/user_guide/overview.md) tool.
 
-### Method 2 (For Ascend 950PR)
+### Method 2 (For Ascend 950PR&950DT products)
 
 If execution accuracy degradation or abnormal memory usage occurs during operator development, you can use the [CANN Simulator](./cann_sim.md) simulation tool to analyze the operator's instruction pipeline situation, thereby identifying the root cause and performing targeted optimization.
 
