@@ -57,44 +57,12 @@ struct TestArgs {
     int64_t k = 4096;
     int32_t deviceId = 0;
     double eMax = 0.001;
-    int64_t reduceCores = 8;
     int32_t verbose = 1;
 
     void Print() const
     {
-        LOG_PRINT("Args: m=%ld n=%ld k=%ld eMax=%f reduceCores=%ld "
-                  "verbose=%d deviceId=%d\n",
-                  m, n, k, eMax, reduceCores, verbose, deviceId);
-    }
-
-    int Parse(int argc, const char** argv)
-    {
-        const std::string helper =
-            "test_aclnn_matmul_abft_verify_bf16 m n k eMax reduceCores verbose [deviceId]";
-        enum {
-            M_IDX = 1,
-            N_IDX,
-            K_IDX,
-            EMAX_IDX,
-            RED_CORES_IDX,
-            VERBOSE_IDX,
-            DEVICE_ID_IDX,
-            ARGS_MAX
-        };
-        if (argc < DEVICE_ID_IDX || argc > ARGS_MAX) {
-            std::cerr << helper << std::endl;
-            return -1;
-        }
-        m = std::atol(argv[M_IDX]);
-        n = std::atol(argv[N_IDX]);
-        k = std::atol(argv[K_IDX]);
-        eMax = std::stod(argv[EMAX_IDX]);
-        reduceCores = std::atol(argv[RED_CORES_IDX]);
-        verbose = std::atoi(argv[VERBOSE_IDX]);
-        if (argc == ARGS_MAX) {
-            deviceId = std::atoi(argv[DEVICE_ID_IDX]);
-        }
-        return 0;
+        LOG_PRINT("Args: m=%ld n=%ld k=%ld eMax=%f verbose=%d deviceId=%d\n",
+                  m, n, k, eMax, verbose, deviceId);
     }
 };
 
@@ -156,268 +124,196 @@ int InitAcl(int32_t deviceId, aclrtContext* context, aclrtStream* stream)
     return ACL_SUCCESS;
 }
 
-void PrintChecksum(const std::vector<int64_t>& shape, void* deviceAddr, aclDataType dataType,
-                   const char* name)
+void PrintFloatChecksum(const std::vector<int64_t>& shape, void* deviceAddr, const char* name)
 {
-    auto elementCount = GetShapeSize(shape);
+    std::vector<float> hostData(GetShapeSize(shape), 0.0F);
+    if (CopyDeviceToHost(hostData, deviceAddr, name) != ACL_SUCCESS) {
+        return;
+    }
+    double sum = 0.0;
+    for (auto value : hostData) {
+        sum += static_cast<double>(value);
+    }
+    LOG_PRINT("%s (FP32) first 8:", name);
+    for (int64_t i = 0; i < std::min<int64_t>(hostData.size(), 8); ++i) {
+        LOG_PRINT(" %.6f", hostData[i]);
+    }
+    LOG_PRINT("  checksum: %.6f\n", sum);
+}
+
+void PrintBf16Checksum(const std::vector<int64_t>& shape, void* deviceAddr, const char* name)
+{
+    std::vector<Bf16> hostData(GetShapeSize(shape), 0);
+    if (CopyDeviceToHost(hostData, deviceAddr, name) != ACL_SUCCESS) {
+        return;
+    }
+    double sum = 0.0;
+    for (auto value : hostData) {
+        sum += static_cast<double>(Bf16ToFloat(value));
+    }
+    LOG_PRINT("%s (BF16) first 8:", name);
+    for (int64_t i = 0; i < std::min<int64_t>(hostData.size(), 8); ++i) {
+        LOG_PRINT(" %.6f", Bf16ToFloat(hostData[i]));
+    }
+    LOG_PRINT("  checksum: %.6f\n", sum);
+}
+
+void PrintUint8Checksum(const std::vector<int64_t>& shape, void* deviceAddr, const char* name)
+{
+    std::vector<uint8_t> hostData(GetShapeSize(shape), 0);
+    if (CopyDeviceToHost(hostData, deviceAddr, name) != ACL_SUCCESS) {
+        return;
+    }
+    uint64_t sum = 0;
+    for (auto value : hostData) {
+        sum += static_cast<uint64_t>(value);
+    }
+    LOG_PRINT("%s (U8) first 8:", name);
+    for (int64_t i = 0; i < std::min<int64_t>(hostData.size(), 8); ++i) {
+        LOG_PRINT(" %u", static_cast<uint32_t>(hostData[i]));
+    }
+    LOG_PRINT("  checksum: %lu\n", sum);
+}
+
+void PrintChecksum(const std::vector<int64_t>& shape, void* deviceAddr, aclDataType dataType, const char* name)
+{
     if (dataType == ACL_FLOAT) {
-        std::vector<float> hostData(elementCount, 0.0F);
-        auto ret = aclrtMemcpy(hostData.data(), hostData.size() * sizeof(float),
-                               deviceAddr, hostData.size() * sizeof(float), ACL_MEMCPY_DEVICE_TO_HOST);
-        CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy %s from device to host failed. ERROR: %d\n", name, ret); return);
-
-        double sum = 0.0;
-        for (auto v : hostData) {
-            sum += static_cast<double>(v);
-        }
-        LOG_PRINT("%s (FP32) first 8:", name);
-        int64_t limit = elementCount < 8 ? elementCount : 8;
-        for (int64_t i = 0; i < limit; ++i) {
-            LOG_PRINT(" %.6f", hostData[i]);
-        }
-        LOG_PRINT("  checksum: %.6f\n", sum);
-
+        PrintFloatChecksum(shape, deviceAddr, name);
     } else if (dataType == ACL_BF16) {
-        std::vector<Bf16> hostData(elementCount, 0);
-        auto ret = aclrtMemcpy(hostData.data(), hostData.size() * sizeof(Bf16),
-                               deviceAddr, hostData.size() * sizeof(Bf16), ACL_MEMCPY_DEVICE_TO_HOST);
-        CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy %s from device to host failed. ERROR: %d\n", name, ret); return);
-
-        double sum = 0.0;
-        for (auto v : hostData) {
-            sum += static_cast<double>(Bf16ToFloat(v));
-        }
-        LOG_PRINT("%s (BF16) first 8:", name);
-        int64_t limit = elementCount < 8 ? elementCount : 8;
-        for (int64_t i = 0; i < limit; ++i) {
-            LOG_PRINT(" %.6f", Bf16ToFloat(hostData[i]));
-        }
-        LOG_PRINT("  checksum: %.6f\n", sum);
-
+        PrintBf16Checksum(shape, deviceAddr, name);
     } else if (dataType == ACL_UINT8) {
-        std::vector<uint8_t> hostData(elementCount, 0);
-        auto ret = aclrtMemcpy(hostData.data(), hostData.size() * sizeof(uint8_t),
-                               deviceAddr, hostData.size() * sizeof(uint8_t), ACL_MEMCPY_DEVICE_TO_HOST);
-        CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("copy %s from device to host failed. ERROR: %d\n", name, ret); return);
-
-        uint64_t sum = 0;
-        for (auto v : hostData) {
-            sum += static_cast<uint64_t>(v);
-        }
-        LOG_PRINT("%s (U8) first 8:", name);
-        int64_t limit = elementCount < 8 ? elementCount : 8;
-        for (int64_t i = 0; i < limit; ++i) {
-            LOG_PRINT(" %u", static_cast<uint32_t>(hostData[i]));
-        }
-        LOG_PRINT("  checksum: %lu\n", sum);
+        PrintUint8Checksum(shape, deviceAddr, name);
     }
 }
 
-int main(int argc, const char** argv)
+struct ExampleShapes {
+    std::vector<int64_t> a;
+    std::vector<int64_t> b;
+    std::vector<int64_t> xv;
+    std::vector<int64_t> c;
+    std::vector<int64_t> compRow;
+};
+
+ExampleShapes CreateExampleShapes(const TestArgs& args)
 {
-    TestArgs args;
-    if (args.Parse(argc, argv) != 0) {
-        return -1;
-    }
-    args.Print();
+    const int64_t splitN = (args.n + 255) / 256;
+    return {{args.m, args.k}, {args.k, args.n}, {args.n}, {args.m, args.n},
+            {((args.m + 7) / 8) * splitN}};
+}
 
-    const int64_t M = args.m;
-    const int64_t N = args.n;
-    const int64_t K = args.k;
-    const int64_t splitN = (N + 256 - 1) / 256;       // L1_TILE_N = 256
-    const int64_t bStatBlock = (splitN + 8 - 1) / 8;  // FLOAT_ELEMENTS_PER_BLOCK = 8
-    const int64_t bStatLen = bStatBlock * 8 + 8;       // aligned length for B stats
-    const int64_t rowSplitLen = M * splitN;            // length of per-row split outputs
-    const int64_t beLen = K * splitN;                  // length of BE / BMaxSlice etc.
+struct ExampleData {
+    std::vector<Bf16> a;
+    std::vector<Bf16> b;
+    std::vector<Bf16> xv;
+    std::vector<float> c;
+    std::vector<uint8_t> compRow;
+};
 
-    // ── Input shapes ──
-    const std::vector<int64_t> aShape = {M, K};
-    const std::vector<int64_t> bShape = {K, N};
-    const std::vector<int64_t> xvShape = {N};
-    const std::vector<int64_t> vxForAeShape = {K};
-
-    // ── Output shapes (from infershape) ──
-    const std::vector<int64_t> zRowColShape = {rowSplitLen};
-    const std::vector<int64_t> compRowShape = {((M + 7) / 8) * splitN};
-    const std::vector<int64_t> cShape = {M, N};
-    const std::vector<int64_t> bStatShape = {bStatLen};
-    const std::vector<int64_t> beShape = {beLen};
-    const std::vector<int64_t> aRedShape = {M};
-
-    // ── Init ACL ──
-    aclrtContext context = nullptr;
-    aclrtStream stream = nullptr;
-    auto ret = InitAcl(args.deviceId, &context, &stream);
-    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("Init acl failed. ERROR: %d\n", ret); return ret);
-
-    // ── Fill host data ──
+ExampleData CreateExampleData(const ExampleShapes& shapes)
+{
+    ExampleData data;
+    data.a.assign(GetShapeSize(shapes.a), 0);
+    data.b.assign(GetShapeSize(shapes.b), 0);
+    data.xv.assign(GetShapeSize(shapes.xv), 0);
+    data.c.assign(GetShapeSize(shapes.c), 0.0F);
+    data.compRow.assign(GetShapeSize(shapes.compRow), 0);
     std::mt19937 rng(42);
     std::uniform_real_distribution<float> dist(-1.0F, 1.0F);
-
-    std::vector<Bf16> hostA(GetShapeSize(aShape), 0);
-    std::vector<Bf16> hostB(GetShapeSize(bShape), 0);
-    std::vector<Bf16> hostXv(GetShapeSize(xvShape), 0);
-    std::vector<Bf16> hostVxForAe(GetShapeSize(vxForAeShape), 0);
-
-    for (auto& v : hostA) {
-        v = FloatToBf16(dist(rng));
+    for (auto& value : data.a) {
+        value = FloatToBf16(dist(rng));
     }
-    for (auto& v : hostB) {
-        v = FloatToBf16(dist(rng));
+    for (auto& value : data.b) {
+        value = FloatToBf16(dist(rng));
     }
-    for (auto& v : hostXv) {
-        v = FloatToBf16(1.0F);
+    for (auto& value : data.xv) {
+        value = FloatToBf16(1.0F);
     }
-    for (auto& v : hostVxForAe) {
-        v = FloatToBf16(1.0F / static_cast<float>(K));
-    }
+    return data;
+}
 
-    // Output data (zero-initialised)
-    std::vector<float> hostZRow(GetShapeSize(zRowColShape), 0.0F);
-    std::vector<float> hostDRow(GetShapeSize(zRowColShape), 0.0F);
-    std::vector<uint8_t> hostCompRow(GetShapeSize(compRowShape), 0);
-    std::vector<float> hostC(GetShapeSize(cShape), 0.0F);
-    std::vector<float> hostThreshold(GetShapeSize(zRowColShape), 0.0F);
-    std::vector<float> hostBMeanAbs(GetShapeSize(bStatShape), 0.0F);
-    std::vector<float> hostBMeanSquare(GetShapeSize(bStatShape), 0.0F);
-    std::vector<float> hostBVar(GetShapeSize(bStatShape), 0.0F);
-    std::vector<Bf16> hostBe(GetShapeSize(beShape), 0);
-    std::vector<float> hostBeForAiv(GetShapeSize(beShape), 0.0F);
-    std::vector<float> hostBMaxSlice(GetShapeSize(beShape), 0.0F);
-    std::vector<float> hostBMinSlice(GetShapeSize(beShape), 0.0F);
-    std::vector<float> hostAMax(GetShapeSize(aRedShape), 0.0F);
-    std::vector<float> hostAMean(GetShapeSize(aRedShape), 0.0F);
-    std::vector<float> hostAMin(GetShapeSize(aRedShape), 0.0F);
+struct ExampleTensors {
+    void *devA = nullptr, *devB = nullptr, *devXv = nullptr, *devC = nullptr, *devCompRow = nullptr;
+    aclTensor *a = nullptr, *b = nullptr, *xv = nullptr, *c = nullptr, *compRow = nullptr;
+};
 
-    // ── Create device tensors ──
-    void *devA = nullptr, *devB = nullptr, *devXv = nullptr, *devVxForAe = nullptr;
-    void *devZRow = nullptr, *devDRow = nullptr;
-    void *devCompRow = nullptr, *devGemmAddend = nullptr, *devC = nullptr;
-    void *devThreshold = nullptr;
-    void *devBMeanAbs = nullptr, *devBMeanSquare = nullptr, *devBVar = nullptr;
-    void *devBe = nullptr, *devBeForAiv = nullptr;
-    void *devBMaxSlice = nullptr, *devBMinSlice = nullptr;
-    void *devAMax = nullptr, *devAMean = nullptr, *devAMin = nullptr;
+int CreateExampleTensors(const ExampleData& data, const ExampleShapes& shapes, ExampleTensors* tensors)
+{
+    auto ret = CreateAclTensor(data.a, shapes.a, &tensors->devA, ACL_BF16, &tensors->a);
+    CHECK_RET(ret == ACL_SUCCESS, return ret);
+    ret = CreateAclTensor(data.b, shapes.b, &tensors->devB, ACL_BF16, &tensors->b);
+    CHECK_RET(ret == ACL_SUCCESS, return ret);
+    ret = CreateAclTensor(data.xv, shapes.xv, &tensors->devXv, ACL_BF16, &tensors->xv);
+    CHECK_RET(ret == ACL_SUCCESS, return ret);
+    ret = CreateAclTensor(data.c, shapes.c, &tensors->devC, ACL_FLOAT, &tensors->c);
+    CHECK_RET(ret == ACL_SUCCESS, return ret);
+    return CreateAclTensor(data.compRow, shapes.compRow, &tensors->devCompRow, ACL_UINT8, &tensors->compRow);
+}
 
-    aclTensor *tA = nullptr, *tB = nullptr, *tXv = nullptr, *tVxForAe = nullptr;
-    aclTensor *tZRow = nullptr, *tDRow = nullptr;
-    aclTensor *tCompRow = nullptr, *tGemmAddend = nullptr, *tC = nullptr;
-    aclTensor *tThreshold = nullptr;
-    aclTensor *tBMeanAbs = nullptr, *tBMeanSquare = nullptr, *tBVar = nullptr;
-    aclTensor *tBe = nullptr, *tBeForAiv = nullptr;
-    aclTensor *tBMaxSlice = nullptr, *tBMinSlice = nullptr;
-    aclTensor *tAMax = nullptr, *tAMean = nullptr, *tAMin = nullptr;
+void DestroyExampleTensors(ExampleTensors* tensors)
+{
+    auto destroy = [](aclTensor*& tensor) { if (tensor) { aclDestroyTensor(tensor); tensor = nullptr; } };
+    auto free = [](void*& address) { if (address) { aclrtFree(address); address = nullptr; } };
+    destroy(tensors->a); destroy(tensors->b); destroy(tensors->xv); destroy(tensors->c); destroy(tensors->compRow);
+    free(tensors->devA); free(tensors->devB); free(tensors->devXv); free(tensors->devC); free(tensors->devCompRow);
+}
 
-    CHECK_RET(CreateAclTensor(hostA, aShape, &devA, ACL_BF16, &tA) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostB, bShape, &devB, ACL_BF16, &tB) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostXv, xvShape, &devXv, ACL_BF16, &tXv) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostVxForAe, vxForAeShape, &devVxForAe, ACL_BF16, &tVxForAe) == ACL_SUCCESS, return ret);
-
-    CHECK_RET(CreateAclTensor(hostZRow, zRowColShape, &devZRow, ACL_FLOAT, &tZRow) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostDRow, zRowColShape, &devDRow, ACL_FLOAT, &tDRow) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostCompRow, compRowShape, &devCompRow, ACL_UINT8, &tCompRow) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostC, cShape, &devGemmAddend, ACL_FLOAT, &tGemmAddend) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostC, cShape, &devC, ACL_FLOAT, &tC) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostThreshold, zRowColShape, &devThreshold, ACL_FLOAT, &tThreshold) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBMeanAbs, bStatShape, &devBMeanAbs, ACL_FLOAT, &tBMeanAbs) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBMeanSquare, bStatShape, &devBMeanSquare, ACL_FLOAT, &tBMeanSquare) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBVar, bStatShape, &devBVar, ACL_FLOAT, &tBVar) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBe, beShape, &devBe, ACL_BF16, &tBe) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBeForAiv, beShape, &devBeForAiv, ACL_FLOAT, &tBeForAiv) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBMaxSlice, beShape, &devBMaxSlice, ACL_FLOAT, &tBMaxSlice) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostBMinSlice, beShape, &devBMinSlice, ACL_FLOAT, &tBMinSlice) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostAMax, aRedShape, &devAMax, ACL_FLOAT, &tAMax) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostAMean, aRedShape, &devAMean, ACL_FLOAT, &tAMean) == ACL_SUCCESS, return ret);
-    CHECK_RET(CreateAclTensor(hostAMin, aRedShape, &devAMin, ACL_FLOAT, &tAMin) == ACL_SUCCESS, return ret);
-
-    // ── Launch MatmulAbftVerify ──
+int ExecuteMatmulAbftVerify(const TestArgs& args, const ExampleTensors& tensors, aclrtStream stream)
+{
     uint64_t workspaceSize = 0;
     aclOpExecutor* executor = nullptr;
-
-    ret = aclnnMatmulAbftVerifyGetWorkspaceSize(
-        tA, tB, tC, tXv, tVxForAe,
-        args.eMax,
-        args.reduceCores,
-        tZRow, tDRow, tCompRow,
-        tThreshold,
-        tBMeanAbs, tBMeanSquare, tBVar,
-        tBe, tBeForAiv,
-        tBMaxSlice, tBMinSlice,
-        tAMax, tAMean, tAMin,
-        &workspaceSize, &executor);
-    CHECK_RET(ret == ACL_SUCCESS,
-              LOG_PRINT("aclnnMatmulAbftVerifyGetWorkspaceSize failed. ERROR: %d.\n[ERROR msg]%s\n",
-                        ret, aclGetRecentErrMsg());
-              return ret);
-
+    auto ret = aclnnMatmulAbftVerifyGetWorkspaceSize(tensors.a, tensors.b, tensors.c, tensors.xv, args.eMax,
+                                                     tensors.compRow, &workspaceSize, &executor);
+    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclnnMatmulAbftVerifyGetWorkspaceSize failed. ERROR: %d\n", ret); return ret);
     void* workspaceAddr = nullptr;
     if (workspaceSize > 0) {
         ret = aclrtMalloc(&workspaceAddr, workspaceSize, ACL_MEM_MALLOC_HUGE_FIRST);
         CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("allocate workspace failed. ERROR: %d\n", ret); return ret);
     }
-
     ret = aclnnMatmulAbftVerify(workspaceAddr, workspaceSize, executor, stream);
-    CHECK_RET(ret == ACL_SUCCESS,
-              LOG_PRINT("aclnnMatmulAbftVerify failed. ERROR: %d.\n[ERROR msg]%s\n",
-                        ret, aclGetRecentErrMsg());
-              return ret);
-
-    ret = aclrtSynchronizeStream(stream);
-    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclrtSynchronizeStream failed. ERROR: %d\n", ret); return ret);
-
-    LOG_PRINT("MatmulAbftVerify run finished successfully.\n\n");
-    // ── Print results ──
-    if (args.verbose) {
-        PrintChecksum(cShape, devC, ACL_FLOAT, "c");
-        PrintChecksum(zRowColShape, devZRow, ACL_FLOAT, "zRow");
-        PrintChecksum(zRowColShape, devDRow, ACL_FLOAT, "dRow");
-        PrintChecksum(compRowShape, devCompRow, ACL_UINT8, "compRow");
-        PrintChecksum(zRowColShape, devThreshold, ACL_FLOAT, "threshold");
-        PrintChecksum(bStatShape, devBMeanAbs, ACL_FLOAT, "bMeanAbs");
-        PrintChecksum(bStatShape, devBMeanSquare, ACL_FLOAT, "bMeanSquare");
-        PrintChecksum(bStatShape, devBVar, ACL_FLOAT, "bVar");
-        PrintChecksum(beShape, devBe, ACL_BF16, "be");
-        PrintChecksum(beShape, devBeForAiv, ACL_FLOAT, "beForAiv");
-        PrintChecksum(beShape, devBMaxSlice, ACL_FLOAT, "bMaxSlice");
-        PrintChecksum(beShape, devBMinSlice, ACL_FLOAT, "bMinSlice");
-        PrintChecksum(aRedShape, devAMax, ACL_FLOAT, "aMax");
-        PrintChecksum(aRedShape, devAMean, ACL_FLOAT, "aMean");
-        PrintChecksum(aRedShape, devAMin, ACL_FLOAT, "aMin");
+    if (ret == ACL_SUCCESS) {
+        ret = aclrtSynchronizeStream(stream);
     }
+    aclrtFree(workspaceAddr);
+    aclDestroyAclOpExecutor(executor);
+    return ret;
+}
 
-    ret = aclDestroyAclOpExecutor(executor);
-    CHECK_RET(ret == ACL_SUCCESS,
-              LOG_PRINT("aclDestroyAclOpExecutor failed. ERROR: %d\n", ret);
-              return ret);
-    executor = nullptr;
+int RunMatmulAbftVerify(const TestArgs& args, aclrtStream stream)
+{
+    const auto shapes = CreateExampleShapes(args);
+    const auto data = CreateExampleData(shapes);
+    ExampleTensors tensors;
+    auto ret = CreateExampleTensors(data, shapes, &tensors);
+    if (ret == ACL_SUCCESS) {
+        ret = ExecuteMatmulAbftVerify(args, tensors, stream);
+    }
+    if (ret == ACL_SUCCESS && args.verbose) {
+        PrintChecksum(shapes.c, tensors.devC, ACL_FLOAT, "c");
+        PrintChecksum(shapes.compRow, tensors.devCompRow, ACL_UINT8, "compRow");
+    }
+    DestroyExampleTensors(&tensors);
+    return ret;
+}
 
-    // ── Cleanup ──
-    auto Destroy = [](aclTensor*& t) { if (t) { aclDestroyTensor(t); t = nullptr; } };
-    auto Free = [](void*& p) { if (p) { aclrtFree(p); p = nullptr; } };
-
-    Destroy(tA); Destroy(tB); Destroy(tXv); Destroy(tVxForAe);
-    Destroy(tZRow); Destroy(tDRow);
-    Destroy(tCompRow); Destroy(tGemmAddend); Destroy(tC);
-    Destroy(tThreshold);
-    Destroy(tBMeanAbs); Destroy(tBMeanSquare); Destroy(tBVar);
-    Destroy(tBe); Destroy(tBeForAiv);
-    Destroy(tBMaxSlice); Destroy(tBMinSlice);
-    Destroy(tAMax); Destroy(tAMean); Destroy(tAMin);
-
-    Free(devA); Free(devB); Free(devXv); Free(devVxForAe);
-    Free(devZRow); Free(devDRow);
-    Free(devCompRow); Free(devGemmAddend); Free(devC);
-    Free(devThreshold);
-    Free(devBMeanAbs); Free(devBMeanSquare); Free(devBVar);
-    Free(devBe); Free(devBeForAiv);
-    Free(devBMaxSlice); Free(devBMinSlice);
-    Free(devAMax); Free(devAMean); Free(devAMin);
-    Free(workspaceAddr);
-
+void FinalizeAcl(int32_t deviceId, aclrtContext context, aclrtStream stream)
+{
     aclrtDestroyStream(stream);
     aclrtDestroyContext(context);
-    aclrtResetDevice(args.deviceId);
+    aclrtResetDevice(deviceId);
     aclFinalize();
+}
 
-    return 0;
+int main()
+{
+    TestArgs args;
+    args.Print();
+
+    aclrtContext context = nullptr;
+    aclrtStream stream = nullptr;
+    auto ret = InitAcl(args.deviceId, &context, &stream);
+    CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("Init acl failed. ERROR: %d\n", ret); return ret);
+
+    ret = RunMatmulAbftVerify(args, stream);
+    FinalizeAcl(args.deviceId, context, stream);
+    return ret;
 }

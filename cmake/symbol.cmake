@@ -28,6 +28,7 @@ function(gen_ophost_symbol)
     PRIVATE $<BUILD_INTERFACE:intf_pub_cxx17>
             ${OPHOST_NAME}_obj
             -Wl,--no-as-needed
+            register
             acl_rt
             -Wl,--as-needed
             -Wl,-Bsymbolic
