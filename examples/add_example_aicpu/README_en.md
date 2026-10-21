@@ -4,8 +4,8 @@
 
 | Product | Supported |
 | ---- | :----:|
-| Atlas A3 products | √ |
-| Atlas A2 products | √ |
+|<term>Atlas A3 products</term> | √ |
+| <term>Atlas A2 products</term> | √ |
 
 ## Function Description
 

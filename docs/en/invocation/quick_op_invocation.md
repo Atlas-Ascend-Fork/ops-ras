@@ -20,7 +20,7 @@ The list of third-party open-source software required for compiling this project
 | eigen | 5.0.0 | [eigen-5.0.0.tar.gz](https://gitcode.com/cann-src-third-party/eigen/releases/download/5.0.0/eigen-5.0.0.tar.gz) |
 | protobuf | 25.1.0 | [protobuf-25.1.tar.gz](https://gitcode.com/cann-src-third-party/protobuf/releases/download/v25.1/protobuf-25.1.tar.gz) |
 | abseil-cpp | 20230802.1 | [abseil-cpp-20230802.1.tar.gz](https://gitcode.com/cann-src-third-party/abseil-cpp/releases/download/20230802.1/abseil-cpp-20230802.1.tar.gz) |
-| opbase (required for CANN 9.0.0 and later versions) | ec88904b611b04f9b23b529aee66c78bb7cf6140 | [opbase](https://gitcode.com/cann/opbase) |
+| opbase(required for CANN 9.0.0 and later versions) | ec88904b611b04f9b23b529aee66c78bb7cf6140 | [opbase](https://gitcode.com/cann/opbase) |
 
 If your compilation environment can access the network, refer to [Online Compilation](#online-compilation). The compilation script automatically downloads the third-party software. Otherwise, refer to [Offline Compilation](#offline-compilation) to manually download the third-party software.
 

@@ -8,7 +8,7 @@ Before building from source code, complete the environment setup and source code
 
 The list of third-party open source software dependencies for this project's compilation process is as follows:
 
-| Open Source Software | Version | Download Address |
+| Open Source Software |  Version | Download Address |
 |---|---|---|
 | json | 3.11.3 | [include.zip](https://gitcode.com/cann-src-third-party/json/releases/download/v3.11.3/include.zip) |
 | makeself | 2.5.0 | [makeself-release-2.5.0-patch1.tar.gz](https://gitcode.com/cann-src-third-party/makeself/releases/download/release-2.5.0-patch1.0/makeself-release-2.5.0-patch1.tar.gz) |

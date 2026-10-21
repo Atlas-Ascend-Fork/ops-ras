@@ -3,22 +3,22 @@
 ## Product Support
 
 <!-- npu="950" id1 -->
-- <term>Ascend 950PR&950DT系列产品</term>: Not supported
+- <term>Ascend 950PR&950DT products</term>: Not supported
 <!-- end id1 -->
 <!-- npu="A3" id2 -->
-- <term>Atlas A3 Training Series/Atlas A3 Inference Series</term>: Supported
+- <term>Atlas A3 products</term>: Supported
 <!-- end id2 -->
 <!-- npu="910b" id3 -->
-- <term>Atlas A2 Training Series/Atlas A2 Inference Series</term>: Supported
+- <term>Atlas A2 products</term>: Supported
 <!-- end id3 -->
 <!-- npu="310b" id4 -->
-- <term>Atlas 200I/500 A2 Inference Products</term>: Not supported
+- <term>Atlas 200I/500 A2 inference products</term>: Not supported
 <!-- end id4 -->
 <!-- npu="310p" id5 -->
-- <term>Atlas Inference Series</term>: Not supported
+- <term>Atlas inference products</term>: Not supported
 <!-- end id5 -->
 <!-- npu="910" id6 -->
-- <term>Atlas Training Series</term>: Not supported
+- <term>Atlas training products</term>: Not supported
 <!-- end id6 -->
 
 ## Overview

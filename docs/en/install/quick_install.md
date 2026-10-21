@@ -14,7 +14,7 @@ This project provides multiple ways to set up the Ascend environment. Choose as 
 |  Installation Method  |  Description  |  Applicable Scenario  |
 | ----- | ------ | ------ |
 |  CANNLab  | One-stop development platform that provides an online Ascend environment that can be run directly, without manual installation.<br>Currently, single-node computing power is available, and the **latest CANN package is installed by default**. | Suitable for developers without Ascend devices.|
-|  Docker  | Docker images are an efficient deployment method with CANN packages and required dependencies pre-integrated.<br>Currently applicable to Atlas A2 and A3 series products. Supported OSs: ubuntu22.04 and openeuler24.03. The **latest CANN package is installed by default**. |Suitable for developers who have Ascend devices and need to quickly set up an environment.|
+|  Docker  | Docker images are an efficient deployment method with CANN packages and required dependencies pre-integrated.<br>Currently applicable to Atlas A2 and A3 products. Supported OSs: ubuntu22.04 and openeuler24.03. The **latest CANN package is installed by default**. |Suitable for developers who have Ascend devices and need to quickly set up an environment.|
 |  Manual Installation  | Manually install CANN packages and basic dependencies, with high flexibility. |Suitable for developers who have Ascend devices and want to manually install CANN packages or experience the latest master branch capabilities.|
 
 ### Method 1: CANNLab

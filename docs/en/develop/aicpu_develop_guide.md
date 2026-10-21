@@ -202,7 +202,7 @@ After operator development is completed, compile the operator project to generat
     bash build.sh --pkg --soc=${soc_version} --vendor_name=${vendor_name} --ops=${op_list} [--experimental]
     ```
 
-   - --soc: ${soc_version} represents the NPU model. For Atlas A2 series products, use "ascend910b" (default). For Atlas A3 series products, use "ascend910_93". For Ascend 950PR/Ascend 950DT products, use "ascend950".
+   - --soc: ${soc_version} represents the NPU model. For Atlas A2 products, use "ascend910b" (default). For Atlas A3 products, use "ascend910_93". For Ascend 950PRZ&950DT products, use "ascend950".
    - --vendor_name (optional): ${vendor_name} represents the name of the custom operator package to build. The default name is custom.
    - --ops (optional): ${op_list} represents the operators to compile. If not specified, all operators are compiled by default. The format is "--ops=add_example".
    - --experimental (optional): If the operator being compiled is a contributed operator, configure --experimental.

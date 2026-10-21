@@ -6,19 +6,19 @@
 - <term>Ascend 950PR&950DT系列产品</term>：不支持
 <!-- end id1 -->
 <!-- npu="A3" id2 -->
-- <term>Atlas A3 训练系列产品/Atlas A3 推理系列产品</term>：支持
+- <term>Atlas A3系列产品</term>：支持
 <!-- end id2 -->
 <!-- npu="910b" id3 -->
-- <term>Atlas A2 训练系列产品/Atlas A2 推理系列产品</term>：支持
+- <term>Atlas A2系列产品</term>：支持
 <!-- end id3 -->
 <!-- npu="310b" id4 -->
-- <term>Atlas 200I/500 A2 推理产品</term>：不支持
+- <term>Atlas 200I/500 A2推理产品</term>：不支持
 <!-- end id4 -->
 <!-- npu="310p" id5 -->
-- <term>Atlas 推理系列产品</term>：不支持
+- <term>Atlas推理系列产品</term>：不支持
 <!-- end id5 -->
 <!-- npu="910" id6 -->
-- <term>Atlas 训练系列产品</term>：不支持
+- <term>Atlas训练系列产品</term>：不支持
 <!-- end id6 -->
 
 ## 功能说明
@@ -28,7 +28,7 @@
 - 特点
 
   - 自适应阈值: 该算子能够根据矩阵大小与值域自动确定用于比对的阈值，能够在保证检出率的同时避免误检。
-    - 自适应阈值算法与推导见https://gitee.com/yihenggao/v-abft的文档
+    - 自适应阈值算法与推导见[website](https://gitee.com/yihenggao/v-abft)的文档
 
   - 计算量显著小于基于重新计算的容错方案。在矩阵维度m=n=k=a时，本算子只需8a^2次浮点计算，而重算则需要2a^3次浮点计算。且容错阈值也与该算法相匹配
 
@@ -95,9 +95,9 @@ aclnnStatus aclnnMatmulAbftVerify(
         <th>描述</th>
         <th>使用说明</th>
         <th>数据类型</th>
-        <th><a href="../../../docs/zh/context/数据格式.md" target="_blank">数据格式</a></th>
+        <th><a href="../../../docs/zh/context/data_format.md" target="_blank">数据格式</a></th>
         <th style="white-space: nowrap">维度(shape)</th>
-        <th><a href="../../../docs/zh/context/非连续的Tensor.md" target="_blank">非连续的Tensor</a></th>
+        <th><a href="../../../docs/zh/context/non_contiguous_tensor.md" target="_blank">非连续的Tensor</a></th>
       </tr>
     </thead>
     <tbody>

@@ -75,7 +75,7 @@
     | 参数 | 说明 | 注意事项 |
     | :--- | :--- | :--- |
     | `--name cann_container` | 为容器指定名称，便于管理。 | 可自定义。 |
-    | `--device /dev/davinci0` | 核心：将宿主机的NPU设备卡映射到容器内，可指定映射多张NPU设备卡。 | 必须根据实际情况调整：`davinci0`对应系统中的第0张NPU卡。请先在宿主机执行`npu-smi info`命令，根据输出显示的设备号（如`NPU 0`, `NPU 1`）来修改此编号。|
+    | `--device /dev/davinci0` | 核心：将宿主机的NPU设备卡映射到容器内，可指定映射多张NPU设备卡。 | 必须根据实际情况调整：`davinci0`对应系统中的第0张NPU卡。请先在宿主机执行`npu-smi info`命令，根据输出显示的设备号（如`NPU 0`,`NPU 1`）来修改此编号。|
     | `--device /dev/davinci_manager` | 映射NPU设备管理接口。 | - |
     | `--device /dev/devmm_svm` | 映射设备内存管理接口。 | - |
     | `--device /dev/hisi_hdc` | 映射主机与设备间的通信接口。 | - |

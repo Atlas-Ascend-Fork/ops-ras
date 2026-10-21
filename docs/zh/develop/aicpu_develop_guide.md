@@ -232,7 +232,7 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/opp/vendors/${vendor_name}/op_api/lib
 
 - **UT验证**
 
-  算子开发过程中，可通过UT验证（如Kernel）方式进行快速验证，如需查看详细实现，请参考[Kernel UT](../../../examples/add_example_aicpu/tests/ut/op_kernel_aicpu/test_add_example.cpp)。
+  算子开发过程中，可通过UT验证（如Kernel）方式进行快速验证，如需查看详细实现，请参考[Kernel UT](../../../examples/add_example_aicpu/op_kernel_aicpu/add_example_aicpu.cpp)。
 
 - **aclnn调用验证**
 

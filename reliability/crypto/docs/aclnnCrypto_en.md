@@ -32,6 +32,7 @@
 ## Function Prototype
 
 Each operator uses a two-phase API. Call the "aclnnCryptoGetWorkspaceSize" API to obtain the required workspace size and the executor that contains the operator computation flow, and then call the "aclnnCrypto" API to execute the computation.
+
 ```c++
 aclnnStatus aclnnCryptoAicpuGetWorkspaceSize(
   const aclTensor      *key,
