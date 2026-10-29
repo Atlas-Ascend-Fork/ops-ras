@@ -1,5 +1,7 @@
 # AddExample
 
+English | [简体中文](./README.md)
+
 ## Product Support
 
 | Product | Supported |
