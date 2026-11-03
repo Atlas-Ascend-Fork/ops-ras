@@ -87,13 +87,18 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/opp/vendors/custom_ras/op_api/lib:${L
 
 ### 5. Quick Verification: Run Operator Sample
 
-The general running command format: `bash build.sh --run_example <operator name> <running mode> <package mode>`.
+The general running command format: `bash build.sh --run_example <operator name> <running mode> <package mode> --vendor_name=<custom operator package name>`.
 
 Taking AddExample as an example, it provides a simple operator sample `add_example/examples/test_aclnn_add_example.cpp`. Run this sample to verify whether the operator function is normal.
 
 ```bash
 bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${soc_version}
 ```
+
+- < operator name>: add_example
+- < running mode >: eager
+- < package mode >: cust
+- --vendor_name (optional): The vendor name indicates the custom operator package name to build, and the default name is custom.
 
 > **Note**: When running the sample, ensure that the `--soc` parameter is consistent with the `--soc` value used when compiling the operator package. Otherwise, `error 161001` may be reported (for example, `aclnnXxxGetWorkspaceSize failed`). If this error occurs, go back to [Section 2](#2-compile-the-addexample-operator) to check the `--soc` value, and then recompile and reinstall.
 
@@ -267,6 +272,11 @@ int main() {
     ```bash
     bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${soc_version}
     ```
+
+    The corresponding `${soc_version}` values for product names are as follows. Please pass the parameter according to the actual scenario.
+    - Atlas A2 products: `ascend910b`
+    - Atlas A3 products: `ascend910_93`
+    - Ascend 950PR&950DT products: `ascend950`
 
 3. Observe whether the operator output result meets expectations.
 

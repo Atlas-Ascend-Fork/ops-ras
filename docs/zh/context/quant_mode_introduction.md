@@ -49,7 +49,7 @@ CANN算子量化是指对神经网络中Matmul等矩阵（cube）类算子的输
 
 ## 常见组合量化
 
-- 全量化：一般是指对左、右矩阵均进行量化的模式，包括
+- 全量化：一般是指对左、右矩阵均进行量化的模式，包括：
   - pertensor-perchannel量化模式（简称T-C量化模式）
   - pertoken-perchannel量化模式（简称K-C量化模式）
   - pergroup-perblock量化模式（简称G-B量化模式）

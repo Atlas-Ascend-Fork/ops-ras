@@ -87,7 +87,7 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/opp/vendors/custom_ras/op_api/lib:${L
 
 ### 5. 快速验证：运行算子样例
 
-通用的运行命令格式：`bash build.sh --run_example <算子名> <运行模式> <包模式>`。
+通用的运行命令格式：`bash build.sh --run_example <算子名> <运行模式> <包模式> --vendor_name=<自定义算子包名>`。
 
 以AddExample为例，其提供了简单算子样例`ops-ras/examples/add_example/examples/test_aclnn_add_example.cpp`，运行该样例验证算子功能是否正常。
 
@@ -95,9 +95,11 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/opp/vendors/custom_ras/op_api/lib:${L
 bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${soc_version}
 ```
 
-<算子名>：add_example
-<运行模式>：eager
-<包模式>：cust
+- <算子名>：add_example
+- <运行模式>：eager
+- <包模式>：cust
+- --vendor_name(可选)：vendorname表示构建的自定义算子包名，默认名为custom.
+
 > **注意**：运行样例时需确保`--soc`参数与编译算子包时使用的`--soc`取值一致，否则可能报`error 161001`（如`aclnnXxxGetWorkspaceSize failed`）。如遇此错误，请回到[第2节](#2-编译addexample算子)核对`--soc`取值后重新编译安装。
 
 预期输出：打印算子`AddExample`的加法计算结果，表明算子已成功部署并正确执行。
@@ -270,6 +272,11 @@ int main() {
     ```bash
     bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${soc_version}
     ```
+
+    产品名对应的${soc_version}取值如下，请按实际场景传参。
+    - Atlas A2系列产品：取值为ascend910b
+    - Atlas A3系列产品：取值为ascend910_93
+    - Ascend 950PR&950DT系列产品：取值为ascend950
 
 3. 观察算子输出结果是否符合预期。
 

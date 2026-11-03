@@ -47,9 +47,8 @@ Calculate a+b, actual result is:
 
 When the data types of two inputs a and b that satisfy the broadcast relationship, or the deduced data types, are among COMPLEX64, COMPLEX128, DOUBLE, INT16, UINT16, or UINT64, in addition to satisfying the above broadcast rules, the following conditions must also be met, otherwise the broadcast will fail and cause the operator execution to report an error.
 
-Condition: The merged dimension of consecutive axes that need broadcasting and consecutive axes that do not need broadcasting must be less than 6.
-
-Examples:
-
-- When a.shape=(5, 1, 5, 1, 5, 1) and b.shape=(5, 5, 5, 5, 5, 5), there are no axes that need to be merged, the final dimension is 6, and the broadcast reports an error.
-- When a.shape=(5, 1, 5, 5, 1, 1) and b.shape=(5, 5, 5, 5, 5, 5), broadcasting is not needed in dimensions 2 and 3, and broadcasting is needed in dimensions 4 and 5. They are merged separately and continuously, and the merged dimension is 4, so the broadcast succeeds.
+- Condition: After merging consecutive axes that require broadcasting and consecutive axes that do not require broadcasting, the resulting number of segments must be less than 6.
+- Meaning: Mark each axis of the shapes involved in broadcasting one by one as requiring broadcasting or not requiring broadcasting (see the broadcasting rules above). Merge adjacent axes that have the same mark into one segment (consecutive axes that require broadcasting form one segment, and consecutive axes that do not require broadcasting form one segment). The total number of merged segments must be less than 6 (that is, no more than 5 segments); otherwise, broadcasting fails.
+- Example (indices start from 0):
+  - When a.shape=(5, 1, 5, 1, 5, 1) and b.shape=(5, 5, 5, 5, 5, 5): axes 0, 2, and 4 do not require broadcasting, axes 1, 3, and 5 require broadcasting, and no adjacent axes with the same mark can be merged. The final number of dimensions is 6 segments, and broadcasting reports an error.
+  - When a.shape=(5, 1, 5, 5, 1, 1) and b.shape=(5, 5, 5, 5, 5, 5): axis 0 does not require broadcasting, axis 1 requires broadcasting, axes 2 and 3 do not require broadcasting (merged into one segment), and axes 4 and 5 require broadcasting (merged into one segment). After merging, the number of dimensions is 4, and broadcasting succeeds.
