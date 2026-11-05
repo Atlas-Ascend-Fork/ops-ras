@@ -42,8 +42,8 @@ The purpose of this stage is to **quickly experience the project standard proces
 
 > Note: If you need to switch the source code branch version, refer to the following guidance.
 >
-> 1. Execute `git branch` in the source code directory to query the current source code version.
-> 2. Execute `git checkout ${tag_version}` in the source code directory to switch to the target branch source code. Ensure that the source code matches the CANN version. If the source code already exists, execute `git pull` to pull the latest source code.
+> 1. Execute `git describe --tags --always` (or `git log -1 --oneline`) in the source code directory to query the current source code version.
+> 2. Execute `git checkout ${tag_version}` in the source code directory to switch to the target branch source code. Ensure that the source code matches the CANN version. Checking out a tag leaves the repository in detached HEAD state, so `git pull` reports `You are not currently on a branch.` To pull the latest source code, first switch to the corresponding branch with `git checkout <branch_name>`, or run `git fetch` and check out the target tag again.
 
 ### 2. Compile the AddExample Operator
 
@@ -61,7 +61,7 @@ For the value of `${soc_version}`, visit the [CANN Download Center](https://www.
 - Atlas A3 products: `ascend910_93`
 - Ascend 950PR&950DT products: `ascend950`
 
-If the following information is prompted, the compilation is successful.
+If the following information is prompted, the compilation is successful (`${arch}` is the actual architecture identifier, such as `x86_64` or `aarch64`).
 
 ```bash
 Self-extractable archive "cann-ops-ras-custom_linux-${arch}.run" successfully created.
@@ -89,7 +89,7 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/opp/vendors/custom_ras/op_api/lib:${L
 
 The general running command format: `bash build.sh --run_example <operator name> <running mode> <package mode> --vendor_name=<custom operator package name>`.
 
-Taking AddExample as an example, it provides a simple operator sample `add_example/examples/test_aclnn_add_example.cpp`. Run this sample to verify whether the operator function is normal.
+Taking AddExample as an example, it provides a simple operator sample `ops-ras/examples/add_example/examples/test_aclnn_add_example.cpp`. Run this sample to verify whether the operator function is normal.
 
 ```bash
 bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${soc_version}
@@ -193,14 +193,17 @@ Please modify the code in `examples/add_example/op_kernel/add_example.h`.
 
   This interface supports printing Scalar type data, such as integers, character types, Boolean types, and so on. For detailed introduction, see "Operator Debugging API > printf" in "[Ascend C API](https://hiascend.com/document/redirect/CannCommunityAscendCApi)".
 
+  In the `Init()` function, add the printing statement after the tiling parameters are initialized and before `pipe.InitBuffer`, as shown below:
+
   ```c++
-  blockLength_ = (tilingData->totalLength + AscendC::GetBlockNum() - 1) / AscendC::GetBlockNum();
+  blockLength_ = tilingData->totalLength / AscendC::GetBlockNum();
   tileNum_ = tilingData->tileNum;
-  tileLength_ = ((blockLength_ + tileNum_ - 1) / tileNum_ / BUFFER_NUM) ?
-        ((blockLength_ + tileNum_ - 1) / tileNum_ / BUFFER_NUM) : 1;
+  tileLength_ = blockLength_ / tileNum_ / BUFFER_NUM;
   // Print the current kernel calculation Block length
   AscendC::PRINTF("Tiling blockLength is %llu\n", blockLength_);
   ```
+
+  The first three lines are the existing tiling calculation in `Init()`, and `AscendC::PRINTF` is the newly added printing statement.
 
 * **DumpTensor**
 
@@ -257,7 +260,7 @@ int main() {
     for (int i = 0; i < 4096; ++i) {
         selfXHostData[i] = static_cast<float>(i % 10); // Fill with cyclic values of 0-9
     }
-    // === ② Refer to selfX, similarly modify selfY and selfZ inputs ===
+    // === ② Refer to selfX, similarly modify the shape and data of selfY and out ===
 
     // ... subsequent execution code ...
 }

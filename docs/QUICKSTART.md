@@ -42,8 +42,8 @@
 
 > 说明：如需切换源码分支版本，请参考如下指导。
 >
-> 1. 在源码目录执行`git branch`，查询当前源码版本。
-> 2. 在源码目录执行`git checkout ${tag_version}`，切换到目标分支源码，注意满足源码与CANN版本配套关系。若本地已克隆过该分支源码，执行`git pull`拉取最新源码。
+> 1. 在源码目录执行`git describe --tags --always`（或`git log -1 --oneline`），查询当前源码版本。
+> 2. 在源码目录执行`git checkout ${tag_version}`，切换到目标分支源码，注意满足源码与CANN版本配套关系。使用tag检出后处于detached HEAD状态，此时直接执行`git pull`会提示`You are not currently on a branch.`；如需拉取最新源码，请先执行`git checkout <分支名>`切换到对应分支，或执行`git fetch`后重新检出目标tag。
 
 ### 2. 编译AddExample算子
 
@@ -61,7 +61,7 @@ bash build.sh --pkg --soc=${soc_version} --ops=add_example -j16
 - Atlas A3系列产品：取值为ascend910_93
 - Ascend 950PR&950DT系列产品：取值为ascend950
 
-若提示如下信息，说明编译成功。
+若提示如下信息，说明编译成功（`${arch}`为实际架构标识，如`x86_64`、`aarch64`）。
 
 ```bash
 Self-extractable archive "cann-ops-ras-custom_linux-${arch}.run" successfully created.
@@ -193,14 +193,17 @@ __aicore__ inline void AddExample<T>::Compute(int32_t progress)
 
   该接口支持打印Scalar类型数据，如整数、字符型、布尔型等，详细介绍请参见[《Ascend C API》](https://hiascend.com/document/redirect/CannCommunityAscendCApi)中"算子调测API > printf"。
 
+  在`Init()`函数中、tiling参数初始化之后（`pipe.InitBuffer`之前）添加打印语句，示例如下：
+
   ```c++
-  blockLength_ = (tilingData->totalLength + AscendC::GetBlockNum() - 1) / AscendC::GetBlockNum();
+  blockLength_ = tilingData->totalLength / AscendC::GetBlockNum();
   tileNum_ = tilingData->tileNum;
-  tileLength_ = ((blockLength_ + tileNum_ - 1) / tileNum_ / BUFFER_NUM) ?
-        ((blockLength_ + tileNum_ - 1) / tileNum_ / BUFFER_NUM) : 1;
+  tileLength_ = blockLength_ / tileNum_ / BUFFER_NUM;
   // 打印当前核计算Block长度
   AscendC::PRINTF("Tiling blockLength is %llu\n", blockLength_);
   ```
+
+  其中前三行为`Init()`中已有的tiling参数计算，`AscendC::PRINTF`为新增的打印语句。
 
 * **DumpTensor**
 
@@ -257,7 +260,7 @@ int main() {
     for (int i = 0; i < 4096; ++i) {
         selfXHostData[i] = static_cast<float>(i % 10); // 填充0-9的循环值
     }
-    // === ② 参考selfX，同理修改selfY、selfZ的输入 ===
+    // === ② 参考selfX，同理修改selfY、out的shape与数据 ===
 
     // ... 后续执行代码 ...
 }
