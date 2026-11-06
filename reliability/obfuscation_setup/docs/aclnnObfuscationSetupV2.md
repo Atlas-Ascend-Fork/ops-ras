@@ -28,7 +28,7 @@
    - 资源初始化：与PMCC混淆引擎CA建立socket连接、对CA、TA进行初始化，并返回socket连接符。
    - 资源释放：与PMCC混淆引擎CA断开socket连接。
 
-- 背景：PMCC（Privacy&Model Confidential Computing）模型混淆特性利用CPU核中的TrustZone可信执行环境隔离存储混淆因子、派生混淆掩码、执行动态掩码添加。PMCC基于NPU TrustZone构建了模型混淆引擎CA（普通OS中的Client Application）与模型混淆引擎TA（TEE OS中的Trusted Application）。为了使模型在推理执行过程中能够访问模型混淆引擎TA，通过AICPU算子机制及NPU卡内localhost socket进行中转。本次接口新增obfCoefficient，本参数为DeepSeek满血版本中，为了保证模型混淆性能满足要求，增加混淆系数，对输入数据按照混淆系数比例进行处理。
+- 背景：PMCC（Privacy&Model Confidential Computing）模型混淆特性利用CPU核中的TrustZone可信执行环境隔离存储混淆因子、派生混淆掩码、执行动态掩码添加。PMCC基于NPU TrustZone构建了模型混淆引擎CA（普通OS中的Client Application）与模型混淆引擎TA（TEE OS中的Trusted Application）。为了使模型在推理执行过程中能够访问模型混淆引擎TA，通过AI CPU算子机制及NPU卡内localhost socket进行中转。本次接口新增obfCoefficient，本参数为DeepSeek满血版本中，为了保证模型混淆性能满足要求，增加混淆系数，对输入数据按照混淆系数比例进行处理。
 
 ## 函数原型
 
@@ -465,7 +465,7 @@ int main() {
   ret = aclrtSynchronizeStream(stream);
   CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclrtSynchronizeStream failed. ERROR : %d\n", ret); return ret);
 
-  // 9. 获取输出的值，y表示经过混淆处理的数据，将device侧的内存上的结果拷贝至host侧,需要根据具体API的接口定义修改
+  // 9. 获取输出的值，y表示经过混淆处理的数据，将device侧内存上的结果拷贝至host侧,需要根据具体API的接口定义修改
   // y
   auto ySize = GetShapeSize(yShape);
   std::vector<float> yData(ySize, 0);

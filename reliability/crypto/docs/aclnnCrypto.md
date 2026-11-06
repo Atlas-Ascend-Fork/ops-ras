@@ -23,11 +23,11 @@
 
 ## 功能说明
 
-- 接口功能：分为读秘钥功能和加解密功能。读秘钥功能获取spdm派生的加解密秘钥并写入device侧tensor，加解密功能使用已读取的秘钥对device侧tensor做加密/解密。
+- 接口功能：分为读密钥功能和加解密功能。读密钥功能获取spdm派生的加解密密钥并写入device侧tensor，加解密功能使用已读取的密钥对device侧tensor做加密/解密。
 
-  读秘钥：读密钥前，host和device已经通过spdm派生了加解密秘钥，且调用者已经获取到要读取的秘钥的keyId。读秘钥时，通过uds从KMS-proxy按key_id, alg_type, key_type获取秘钥,并写入device侧的aclTensor key中。
+  读密钥：读密钥前，host和device已经通过spdm派生了加解密密钥，且调用者已经获取到要读取的密钥的keyId。读密钥时，通过uds从KMS-proxy按key_id, alg_type, key_type获取密钥,并写入device侧的aclTensor key中。
 
-  加解密：加解密时，采用标准AES_CTR_128和AES_GCM_128算法计算加解密。使用的秘钥为传入的device侧aclTensor key (已经由读秘钥功能写入)。使用的iv和tag可由host传到device侧。
+  加解密：加解密时，采用标准AES_CTR_128和AES_GCM_128算法计算加解密。使用的密钥为传入的device侧aclTensor key (已经由读密钥功能写入)。使用的iv和tag可由host传到device侧。
 
 ## 函数原型
 
@@ -84,7 +84,7 @@ aclnnStatus aclnnCryptoAicpu(
       <tr>
         <td>key(aclTensor*)</td>
         <td>输入</td>
-        <td>算子使用的秘钥。</td>
+        <td>算子使用的密钥。</td>
         <td>不支持空Tensor。</td>
         <td>UINT8</td>
         <td>ND</td>
@@ -127,7 +127,7 @@ aclnnStatus aclnnCryptoAicpu(
         <td>opConfig (aclTensor*)</td>
         <td>输入</td>
         <td>算子参数设置，结构为 {version, mode, alg_type, key_type, key_id, device_id}。</td>
-        <td>不支持空Tenosr。version表示算子版本，取值范围为[1,2], 1表示支持A2/A3的版本， 2表示支持A5的版本；mode表示算子工作模式，取值范围为[0,2], 0表示读取秘钥，1表示加密模式，2表示解密模式；alg_type表示算法类型，取值范围为[1,2], 1表示AES_CTR_128算法，2表示AES_GCM_128算法；key_type表示秘钥类型，取值范围为[1],默认为1，表示秘钥保存在key指向的张量内；key_id表示秘钥id，取值范围为[0,UINT32_MAX],从0开始，key_id越大说明秘钥越新；device_id表示设备id,取值范围为[0,63],从0开始</td>
+        <td>不支持空Tensor。version表示算子版本，取值范围为[1,2], 1表示支持A2/A3的版本， 2表示支持A5的版本；mode表示算子工作模式，取值范围为[0,2], 0表示读取密钥，1表示加密模式，2表示解密模式；alg_type表示算法类型，取值范围为[1,2], 1表示AES_CTR_128算法，2表示AES_GCM_128算法；key_type表示密钥类型，取值范围为[1],默认为1，表示密钥保存在key指向的张量内；key_id表示密钥id，取值范围为[0,UINT32_MAX],从0开始，key_id越大说明密钥越新；device_id表示设备id,取值范围为[0,63],从0开始</td>
         <td>UINT32</td>
         <td>ND</td>
         <td>任意维度</td>
@@ -265,14 +265,14 @@ aclnnStatus aclnnCryptoAicpu(
 - 确定性计算： aclnnCrypto默认确定性实现。
 
 - 入参约束：
-  1. opConfig.mode = 0 (读取秘钥)时，inputText, outputText, iv, tag可以为空(不为空但是类型和形状符合约束也不会报错)
+  1. opConfig.mode = 0 (读取密钥)时，inputText, outputText, iv, tag可以为空(不为空但是类型和形状符合约束也不会报错)
   2. key, opConfig, out不能为空
   3. inputText和outputText不为空时，形状和大小要相同(类型相同，维数相同，每一维的大小相同)
   4. 不为空的入参类型必须符合表格里的类型约束
   5. opConfig.algType = 1 (AES-CTR-128算法)时，tag可以为空(不为空也不会使用该参数)
   6. opConfig.algType = 2 (AES-GCM-128算法)时，tag不能为空
   7. opConfig的参数必须符合定义，version取值1,2，mode取值0,1,2, algType取值1,2, keyType取值1，keyId取值 [0, UINT32_MAX], deviceId取值 [0,63]
-  8. 读秘钥时必须传入正确的keyId (一个keyId对应一个spdm已派生的加解密秘钥)，否则会报错
+  8. 读密钥时必须传入正确的keyId (一个keyId对应一个spdm已派生的加解密密钥)，否则会报错
 
 ## 调用示例
 
