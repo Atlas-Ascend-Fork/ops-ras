@@ -29,6 +29,7 @@ function(gen_ophost_symbol)
             ${OPHOST_NAME}_obj
             -Wl,--no-as-needed
             acl_rt
+            register
             -Wl,--as-needed
             -Wl,-Bsymbolic
             $<$<CONFIG:RELEASE>:-s>
