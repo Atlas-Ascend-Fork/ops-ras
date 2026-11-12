@@ -3,11 +3,11 @@
 ## 前提说明
 
 - 如需编译执行算子API，请确保基础环境已搭建完成，包括驱动、固件、CANN软件包、ops包等。
-- 算子API的调用流程和编译运行操作详情请参见[《应用开发（C&C++）》](https://hiascend.com/document/redirect/CannCommunityCppInferWizard)中“单算子调用>单算子API执行>调用aclnn接口示例代码”。
+- 算子API的调用流程和编译运行操作详情请参见《[应用开发（C&C++）](https://hiascend.com/document/redirect/CannCommunityCppInferWizard)》中“单算子调用>单算子API执行>调用aclnn接口示例代码”。
 
 ## 编译前准备
 
-本章以开发和运行环境合设场景为例，即带AI处理器的机器既作为开发环境又作为运行环境。该场景下，代码开发和代码运行在同一台机器上。这里以**AddExample算子**为例，其他算子的调用逻辑、流程、编译脚本与AddExample算子大致一样，请根据实际情况自行修改API调用脚本（\*.cpp）和编译脚本(CMakeLists)。
+本章以开发和运行环境合设场景为例，即带AI处理器的机器既作为开发环境又作为运行环境。该场景下，代码开发和代码运行在同一台机器上。这里以**AddExample算子**为例，其他算子的调用逻辑、流程、编译脚本与AddExample算子大致一样，请根据实际情况自行修改API调用脚本（\*.cpp）和编译脚本（CMakeLists）。
 
 - **示例代码**
 
@@ -65,7 +65,7 @@
   1. 提前准备好算子的调用代码（\*.cpp）和编译脚本（CMakeLists.txt）。
   2. 配置环境变量。
 
-     安装CANN软件后，使用CANN运行用户登录环境，执行如下命令生效环境变量。
+     安装CANN软件后，使用CANN运行用户登录环境，执行如下命令生效环境变量：
 
         ```bash
         source ${INSTALL_DIR}/set_env.sh

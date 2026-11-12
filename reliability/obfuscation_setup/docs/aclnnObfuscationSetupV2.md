@@ -32,7 +32,7 @@
 
 ## 函数原型
 
-每个算子分为[两段式接口](../../../docs/zh/context/two_phase_api.md)，必须先调用 “aclnnObfuscationSetupV2GetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnObfuscationSetupV2”接口执行计算。
+每个算子分为[两段式接口](../../../docs/zh/context/two_phase_api.md)，必须先调用“aclnnObfuscationSetupV2GetWorkspaceSize”接口获取计算所需workspace大小以及包含了算子计算流程的执行器，再调用“aclnnObfuscationSetupV2”接口执行计算。
 
 ```c++
 aclnnStatus aclnnObfuscationSetupV2GetWorkspaceSize(
@@ -84,7 +84,7 @@ aclnnStatus aclnnObfuscationSetupV2(
       </tr></thead>
     <tbody>
       <tr>
-        <td>fdToClose（int32_t）</td>
+        <td>fdToClose(int32_t)</td>
         <td>输入</td>
         <td>待关闭的socket连接符。</td>
         <td>cmd为3时填写本算子在cmd为1时返回的fd，否则填0。</td>
@@ -94,7 +94,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>dataType（int32_t）</td>
+        <td>dataType(int32_t)</td>
         <td>输入</td>
         <td>代表Tensor数据类型的编号。</td>
         <td>
@@ -110,7 +110,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>hiddenSize（int32_t）</td>
+        <td>hiddenSize(int32_t)</td>
         <td>输入</td>
         <td>隐藏层维度。</td>
         <td>仅在cmd设置为1或2时需要填写有效值，否则填0，支持1-10000。</td>
@@ -120,9 +120,9 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>tpRank（int32_t）</td>
+        <td>tpRank(int32_t)</td>
         <td>输入</td>
-        <td>TP Rank。</td>
+        <td>TP Rank.</td>
         <td>支持0-1024，仅在cmd设置为1或2时需要填写有效值，否则填0。</td>
         <td>INT32</td>
         <td>-</td>
@@ -130,7 +130,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>modelObfSeedId（int32_t）</td>
+        <td>modelObfSeedId(int32_t)</td>
         <td>输入</td>
         <td>模型混淆因子id。</td>
         <td>用于TA从TEE KMC查询模型混淆因子，仅在cmd设置为1或2时需要填写有效值，否则填0。</td>
@@ -140,7 +140,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>dataObfSeedId（int32_t）</td>
+        <td>dataObfSeedId(int32_t)</td>
         <td>输入</td>
         <td>数据混淆因子id。</td>
         <td>用于TA从TEE KMC查询数据混淆因子，仅在cmd设置为1或2时需要填写有效值，否则填0。</td>
@@ -150,7 +150,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>cmd（int32_t）</td>
+        <td>cmd(int32_t)</td>
         <td>输入</td>
         <td>setup指令编号。</td>
         <td>在{1, 2, 16}中选择，设置为1时进行普通模式资源初始化、为2时进行高精度模式资源初始化，设置为16时进行资源释放。</td>
@@ -160,9 +160,9 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>threadNum（int32_t）</td>
+        <td>threadNum(int32_t)</td>
         <td>输入</td>
-        <td>CA/TA进行混淆处理使用的线程数</td>
+        <td>CA/TA进行混淆处理使用的线程数。</td>
         <td>在{1, 2, 3, 4, 5, 6}中选择，仅在cmd设置为1或2时需要填写有效值，否则填0。</td>
         <td>INT32</td>
         <td>-</td>
@@ -170,17 +170,17 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>obfCoefficient（int32_t）</td>
+        <td>obfCoefficient(int32_t)</td>
         <td>输入</td>
-        <td>进行混淆处理使用的混淆系数</td>
-        <td>取值范围(0.0， 1.0]，仅在cmd设置为1或2时需要填写有效值，否则填0.0。</td>
+        <td>进行混淆处理使用的混淆系数。</td>
+        <td>取值范围(0.0，1.0]，仅在cmd设置为1或2时需要填写有效值，否则填0.0。</td>
         <td>FLOAT</td>
         <td>-</td>
         <td>-</td>
         <td>-</td>
       </tr>
       <tr>
-        <td>fd（aclTensor*）</td>
+        <td>fd(aclTensor*)</td>
         <td>输出</td>
         <td>socket连接符。</td>
         <td>不支持空Tensor。</td>
@@ -190,7 +190,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>×</td>
       </tr>
       <tr>
-        <td>workspaceSize（uint64_t*）</td>
+        <td>workspaceSize(uint64_t*)</td>
         <td>输出</td>
         <td>返回用户需要在Device侧申请的workspace大小。</td>
         <td>-</td>
@@ -200,7 +200,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>-</td>
       </tr>
       <tr>
-        <td>executor（aclOpExecutor**）</td>
+        <td>executor(aclOpExecutor**)</td>
         <td>输出</td>
         <td>返回op执行器，包含了算子计算流程。</td>
         <td>-</td>
@@ -293,9 +293,9 @@ aclnnStatus aclnnObfuscationSetupV2(
   - aclnnObfuscationSetupV2默认确定性实现。
 
 - 该接口与aclnnObfuscationCalculateV2配套使用，完成PMCC模型混淆功能，使用方式如下：
-  - 首先调用aclnnObfuscationSetupV2进行资源初始化，可重复调用，以最后一次初始化为准
-  - 再多次调用aclnnObfuscationCalculateV2进行张量混淆处理
-  - 最后调用aclnnObfuscationSetupV2进行资源释放，只能调用一次；也可不显式进行资源释放，而是通过终止程序进程的方式达到资源释放的目的
+  - 首先调用aclnnObfuscationSetupV2进行资源初始化，可重复调用，以最后一次初始化为准。
+  - 再多次调用aclnnObfuscationCalculateV2进行张量混淆处理。
+  - 最后调用aclnnObfuscationSetupV2进行资源释放，只能调用一次；也可不显式进行资源释放，而是通过终止程序进程的方式达到资源释放的目的。
 
 ## 调用示例
 
@@ -422,7 +422,7 @@ int main() {
       LOG_PRINT("fdData[%ld] is : %d\n", i, fdData[i]);
   }
 
-  // 6. 构造输入与输出,需要根据API的接口定义构造
+  // 6. 构造输入与输出，需要根据API的接口定义构造
   std::vector<int64_t> xShape = {2, 4};
   std::vector<int64_t> yShape = {2, 4};
   void *xDeviceAddr = nullptr;
@@ -444,7 +444,7 @@ int main() {
   ret = CreateAclTensor(yHostData, yShape, &yDeviceAddr, aclDataType::ACL_FLOAT, &y);
   CHECK_RET(ret == ACL_SUCCESS, return ret);
 
-  // 7. 调用CANN算子库API,需要修改为具体的API
+  // 7. 调用CANN算子库API，需要修改为具体的API
   uint64_t workspaceSize2 = 0;
   aclOpExecutor *executor2;
 
@@ -465,7 +465,7 @@ int main() {
   ret = aclrtSynchronizeStream(stream);
   CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclrtSynchronizeStream failed. ERROR : %d\n", ret); return ret);
 
-  // 9. 获取输出的值，y表示经过混淆处理的数据，将device侧内存上的结果拷贝至host侧,需要根据具体API的接口定义修改
+  // 9. 获取输出的值，y表示经过混淆处理的数据，将device侧内存上的结果拷贝至host侧，需要根据具体API的接口定义修改
   // y
   auto ySize = GetShapeSize(yShape);
   std::vector<float> yData(ySize, 0);
@@ -508,12 +508,12 @@ int main() {
   ret = aclrtSynchronizeStream(stream);
   CHECK_RET(ret == ACL_SUCCESS, LOG_PRINT("aclrtSynchronizeStream failed. ERROR: %d\n", ret); return ret);
 
-  // 13. 释放ObfuscationCalculateV2接口涉及的aclTensor和aclScalar,需要根据具体API的接口定义修改
+  // 13. 释放ObfuscationCalculateV2接口涉及的aclTensor和aclScalar，需要根据具体API的接口定义修改
   aclDestroyTensor(x);
   aclDestroyTensor(y);
   aclDestroyTensor(fd);
 
-  // 14. 释放ObfuscationCalculateV2接口涉及的device资源,需要根据具体API的接口定义修改
+  // 14. 释放ObfuscationCalculateV2接口涉及的device资源，需要根据具体API的接口定义修改
   aclrtFree(xDeviceAddr);
   aclrtFree(yDeviceAddr);
   aclrtFree(fdDeviceAddr);

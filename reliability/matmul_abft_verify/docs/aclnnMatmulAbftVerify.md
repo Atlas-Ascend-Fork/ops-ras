@@ -28,9 +28,9 @@
 - 特点
 
   - 自适应阈值: 该算子能够根据矩阵大小与值域自动确定用于比对的阈值，能够在保证检出率的同时避免误检。
-    - 自适应阈值算法与推导见[website](https://gitee.com/yihenggao/v-abft)的文档
+    - 自适应阈值算法与推导见[website](https://gitee.com/yihenggao/v-abft)的文档。
 
-  - 计算量显著小于基于重新计算的容错方案。在矩阵维度m=n=k=a时，本算子只需8a^2次浮点计算，而重算则需要2a^3次浮点计算。且容错阈值也与该算法相匹配
+  - 计算量显著小于基于重新计算的容错方案。在矩阵维度m=n=k=a时，本算子只需8a^2次浮点计算，而重算则需要2a^3次浮点计算。且容错阈值也与该算法相匹配。
 
 - 计算公式：
 
@@ -162,8 +162,8 @@ aclnnStatus aclnnMatmulAbftVerify(
         <td>
           <ul>
             <li>默认值为0.001。</li>
-            <li>A,B为BF16精度,推荐值:0.001</li>
-            <li>A,B为FP32精度, 推荐值: 0.00002</li>
+            <li>A、B为BF16精度，推荐值：0.001</li>
+            <li>A、B为FP32精度，推荐值：0.00002</li>
             <li>使用小于推荐值的eMax会增大检出率，但是也可能会出现误检情况。</li>
             <li>在出现误报的时候，可以将eMax调大。</li>
           </ul>
@@ -215,7 +215,7 @@ aclnnStatus aclnnMatmulAbftVerify(
 
   返回aclnnStatus状态码，具体参见[aclnn返回码](../../../docs/zh/context/aclnn_return_code.md)。
 
-  第一阶段接口完成入参校验，出现以下场景时报错:
+  第一阶段接口完成入参校验，出现以下场景时报错：
 
   <table style="undefined;table-layout: fixed;width: 1030px"><colgroup>
   <col style="width: 250px">
