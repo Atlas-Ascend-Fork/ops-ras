@@ -55,7 +55,7 @@
 bash build.sh --pkg --soc=${soc_version} --ops=add_example -j16
 ```
 
-\$\{soc\_version\}取值请访问[CANN下载中心](https://www.hiascend.com/cann/download)，根据页面提示查询硬件产品名，产品名对应的${soc_version}取值如下，请按实际场景传参。
+\$\{soc\_version\}取值请访问[CANN下载中心](https://www.hiascend.com/cann/download)，根据页面提示查询硬件产品名，产品名对应的${soc_version}取值如下，请按实际场景传参：
 
 - Atlas A2系列产品：取值为ascend910b
 - Atlas A3系列产品：取值为ascend910_93
@@ -63,7 +63,7 @@ bash build.sh --pkg --soc=${soc_version} --ops=add_example -j16
 
 若提示如下信息，说明编译成功（`${arch}`为实际架构标识，如`x86_64`、`aarch64`）。
 
-```bash
+```output
 Self-extractable archive "cann-ops-ras-custom_linux-${arch}.run" successfully created.
 ```
 
@@ -75,7 +75,7 @@ Self-extractable archive "cann-ops-ras-custom_linux-${arch}.run" successfully cr
 ./build_out/cann-ops-ras-*linux*.run
 ```
 
-`AddExample`安装在```${ASCEND_HOME_PATH}/opp/vendors```路径中，```${ASCEND_HOME_PATH}```表示CANN软件安装目录。
+`AddExample`安装在`${ASCEND_HOME_PATH}/opp/vendors`路径中，`${ASCEND_HOME_PATH}`表示CANN软件安装目录。
 
 ### 4. 配置环境变量
 
@@ -98,13 +98,13 @@ bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${
 - <算子名>：add_example
 - <运行模式>：eager
 - <包模式>：cust
-- --vendor_name(可选)：vendorname表示构建的自定义算子包名，默认名为custom.
+- --vendor_name（可选）：vendor_name表示构建的自定义算子包名，默认名为custom
 
-> **注意**：运行样例时需确保`--soc`参数与编译算子包时使用的`--soc`取值一致，否则可能报`error 161001`（如`aclnnXxxGetWorkspaceSize failed`）。如遇此错误，请回到[第2节](#2-编译addexample算子)核对`--soc`取值后重新编译安装。
+> **注意**：运行样例时需确保`--soc`参数与编译算子包时使用的`--soc`取值一致，否则可能报`error 161001`（如`aclnnXxxGetWorkspaceSize failed`）。如遇此错误，请回到[编译AddExample算子](#2-编译addexample算子)核对`--soc`取值后重新编译安装。
 
 预期输出：打印算子`AddExample`的加法计算结果，表明算子已成功部署并正确执行。
 
-```bash
+```output
 mean result[0] is: 2.000000
 mean result[1] is: 2.000000
 mean result[2] is: 2.000000
@@ -118,11 +118,11 @@ mean result[7] is: 2.000000
 
 ## 二、算子开发
 
-本阶段目的是对已成功运行的AddExample算子尝试**修改核函数代码**。
+本阶段目的是对已成功运行的AddExample算子尝试**修改Kernel代码**。
 
 ### 1. 修改Kernel实现
 
-找到AddExample算子的核心kernel实现文件`ops-ras/examples/add_example/op_kernel/add_example.h`，尝试将算子中的Add操作改为Mul操作：
+找到AddExample算子的核心Kernel实现文件`ops-ras/examples/add_example/op_kernel/add_example.h`，尝试将算子中的Add操作改为Mul操作：
 
 ```cpp
 __aicore__ inline void AddExample<T>::Compute(int32_t progress)
@@ -167,7 +167,7 @@ __aicore__ inline void AddExample<T>::Compute(int32_t progress)
 
 4. **成功标志**：输出结果变成乘法结果。
 
-    ```bash
+    ```output
     mean result[0] is: 1.000000
     mean result[1] is: 1.000000
     mean result[2] is: 1.000000
@@ -189,11 +189,11 @@ __aicore__ inline void AddExample<T>::Compute(int32_t progress)
 
 请在`ops-ras/examples/add_example/op_kernel/add_example.h`中进行代码修改。
 
-* **printf**
+- **printf**
 
-  该接口支持打印Scalar类型数据，如整数、字符型、布尔型等，详细介绍请参见[《Ascend C API》](https://hiascend.com/document/redirect/CannCommunityAscendCApi)中"算子调测API > printf"。
+  该接口支持打印Scalar类型数据，如整数、字符型、布尔型等，详细介绍请参见[《Ascend C API》](https://hiascend.com/document/redirect/CannCommunityAscendCApi)中“算子调测API > printf”。
 
-  在`Init()`函数中、tiling参数初始化之后（`pipe.InitBuffer`之前）添加打印语句，示例如下：
+  在`Init()`函数中、Tiling参数初始化之后（`pipe.InitBuffer`之前）添加打印语句，示例如下：
 
   ```c++
   blockLength_ = tilingData->totalLength / AscendC::GetBlockNum();
@@ -203,11 +203,11 @@ __aicore__ inline void AddExample<T>::Compute(int32_t progress)
   AscendC::PRINTF("Tiling blockLength is %llu\n", blockLength_);
   ```
 
-  其中前三行为`Init()`中已有的tiling参数计算，`AscendC::PRINTF`为新增的打印语句。
+  其中前三行为`Init()`中已有的Tiling参数计算，`AscendC::PRINTF`为新增的打印语句。
 
-* **DumpTensor**
+- **DumpTensor**
 
-  该接口支持Dump指定Tensor的内容，同时支持打印自定义附加信息，比如当前行号等，详细介绍请参见[《Ascend C API》](https://hiascend.com/document/redirect/CannCommunityAscendCApi)中"算子调测API > DumpTensor"。
+  该接口支持Dump指定Tensor的内容，同时支持打印自定义附加信息，比如当前行号等，详细介绍请参见[《Ascend C API》](https://hiascend.com/document/redirect/CannCommunityAscendCApi)中“算子调测API > DumpTensor”。
 
   ```c++
   AscendC::LocalTensor<T> zLocal = outputQueueZ.DeQue<T>();
@@ -245,14 +245,14 @@ __aicore__ inline void AddExample<T>::Compute(int32_t progress)
 
 找到并编辑`AddExample`的`ops-ras/examples/add_example/examples/test_aclnn_add_example.cpp`，修改输入张量的形状和数值。
 
-**修改输入/输出数据**：修改输入、输出的shape信息，以及初始化数据，构造相应的输入、输出tensor。
+**修改输入/输出数据**：修改输入、输出的shape信息，以及初始化数据，构造相应的输入、输出Tensor。
 
 ```c++
 int main() {
     // ... 初始化代码 ...
 
     // === ① 修改selfX的输入 ===
-    // 修改前：shape = {32, 4, 4, 4},数值全为1
+    // 修改前：shape = {32, 4, 4, 4}，数值全为1
     // 修改后：将输入shape改为 {8, 8, 8, 8}，并填充不同的测试数据
     std::vector<int64_t> selfXShape = {8, 8, 8, 8};
     std::vector<float> selfXHostData(4096); // 4096 = 8 * 8 * 8 *8
@@ -276,7 +276,7 @@ int main() {
     bash build.sh --run_example add_example eager cust --vendor_name=custom --soc=${soc_version}
     ```
 
-    产品名对应的${soc_version}取值如下，请按实际场景传参。
+    产品名对应的${soc_version}取值如下，请按实际场景传参：
     - Atlas A2系列产品：取值为ascend910b
     - Atlas A3系列产品：取值为ascend910_93
     - Ascend 950PR&950DT系列产品：取值为ascend950
