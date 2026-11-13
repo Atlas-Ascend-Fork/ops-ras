@@ -23,9 +23,9 @@
 
 ## 功能说明
 
-- 接口功能：分为读密钥功能和加解密功能。读密钥功能获取spdm派生的加解密密钥并写入device侧tensor，加解密功能使用已读取的密钥对device侧tensor做加密/解密。
+- 接口功能：分为读密钥功能和加解密功能。读密钥功能获取spdm派生的加解密密钥并写入Device侧tensor，加解密功能使用已读取的密钥对device侧Tensor做加密/解密。
 
-  读密钥：读密钥前，host和device已经通过spdm派生了加解密密钥，且调用者已经获取到要读取的密钥的keyId。读密钥时，通过uds从KMS-proxy按key_id、alg_type、key_type获取密钥，并写入device侧的aclTensor key中。
+  读密钥：读密钥前，Host和device已经通过spdm派生了加解密密钥，且调用者已经获取到要读取的密钥的keyId。读密钥时，通过uds从KMS-proxy按key_id、alg_type、key_type获取密钥，并写入device侧的aclTensor key中。
 
   加解密：加解密时，采用标准AES_CTR_128和AES_GCM_128算法计算加解密。使用的密钥为传入的device侧aclTensor key (已经由读密钥功能写入)。使用的iv和tag可由host传到device侧。
 
@@ -156,7 +156,7 @@ aclnnStatus aclnnCryptoAicpu(
       <tr>
         <td>out (aclTensor*)</td>
         <td>输出</td>
-        <td>状态码，标识算子执行成功还是失败。</td>
+        <td>状态码，表示算子执行成功还是失败。</td>
         <td>不支持空Tensor。</td>
         <td>UINT32</td>
         <td>ND</td>

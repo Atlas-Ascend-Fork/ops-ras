@@ -30,5 +30,5 @@
 | [aclnnObfuscationCalculateV2](../../reliability/obfuscation_calculate/docs/aclnnObfuscationCalculateV2.md) | 将张量x和配置参数（如param、cmd）发送至PMCC混淆引擎。引擎的CA模块调用TA模块，进行张量混淆处理，最终返回shape与x一致的混淆后的张量y。 |默认确定性实现| - |
 | [aclnnObfuscationSetup](../../reliability/obfuscation_setup/docs/aclnnObfuscationSetup.md) | 完成PMCC模型混淆引擎的资源初始化和释放。 |默认确定性实现| - |
 | [aclnnObfuscationSetupV2](../../reliability/obfuscation_setup/docs/aclnnObfuscationSetupV2.md) | 完成PMCC模型混淆引擎的资源初始化和释放。 |默认确定性实现| - |
-| [aclnnCrypto](../../reliability/crypto/docs/aclnnCrypto.md) | 调用aicpu加解密算子，按输入参数执行。 |默认确定性实现| - |
+| [aclnnCrypto](../../reliability/crypto/docs/aclnnCrypto.md) | 调用AI CPU加解密算子，按输入参数执行。 |默认确定性实现| - |
 | [aclnnMatmulAbftVerify](../../reliability/matmul_abft_verify/docs/aclnnMatmulAbftVerify.md) | 基于V-ABFT对预先计算的矩阵乘结果进行容错检测，并输出逐行检测结果。 |默认确定性实现| - |

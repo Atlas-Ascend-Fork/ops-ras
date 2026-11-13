@@ -46,7 +46,7 @@
 
 - 算子功能说明：
 
-  - 输入矩阵A、B和预先计算的C经过checksum编码、阈值估计和校验比对流程，输出压缩后的逐行故障检测结果张量`comp_row`，1表示正确，0表示检测到错误。
+  - 输入矩阵A、B和预先计算的C经过checksum编码、阈值估计和校验比对流程，输出压缩后的逐行故障检测结果张量`compRow`，1表示正确，0表示检测到错误。
 
 ## 函数原型
 
@@ -162,9 +162,9 @@ aclnnStatus aclnnMatmulAbftVerify(
         <td>
           <ul>
             <li>默认值为0.001。</li>
-            <li>A、B为BF16精度，推荐值：0.001</li>
-            <li>A、B为FP32精度，推荐值：0.00002</li>
-            <li>使用小于推荐值的eMax会增大检出率，但是也可能会出现误检情况。</li>
+            <li>A、B为BFLOAT16精度，推荐值为0.001。</li>
+            <li>A、B为FLOAT32，推荐值：0.00002</li>
+            <li>使用小于推荐值的eMax会提高检出率，但是也可能会出现误检情况。</li>
             <li>在出现误报的时候，可以将eMax调大。</li>
           </ul>
         </td>
@@ -278,7 +278,7 @@ aclnnStatus aclnnMatmulAbftVerify(
 - 确定性计算：
   - aclnnMatmulAbftVerify默认确定性实现。
 - 输入矩阵a、b和c必须为2维，shape分别为[M, K]、[K, N]和[M, N]，且a的第1维（K）与b的第0维（K）必须相等。
-- 输入向量weight的shape必须为[N]。
+- 输入向量checksumWeight的shape必须为[N]。
 - 支持的数据类型组合为：
 
   | a       | b       | c       | checksumWeight      |
@@ -299,7 +299,7 @@ workspace由两部分组成：
 1. 固定的16 MiB系统workspace。
 2. user workspace，其中依次放置13个内部中间张量及FT内部临时区。
 
-算子tiling阶段根据M、N、K和输入精度计算完整大小，并通过`workspaceSize`返回。调用者必须申请不少于该大小的连续device内存，不能只按`compRow`大小申请。所有中间张量的起始地址按32字节向上对齐。
+算子tiling阶段根据M、N、K和输入精度计算完整大小，并通过`workspaceSize`返回。调用者必须申请不少于该大小的连续Device内存，不能只按`compRow`大小申请。所有中间张量的起始地址按32字节向上对齐。
 
 定义：
 
@@ -311,7 +311,7 @@ beLen       = K * splitN
 align32(x)  = ceil(x / 32) * 32
 ```
 
-设`W`为user workspace首地址。在kernel内，`W = AscendC::GetUserWorkspace(workspace)`；对于算子外部的device地址计算，当前实现等价于`W = (uint8_t *)workspace + 16 MiB`。
+设`W`为user workspace首地址。在Kernel内，`W = AscendC::GetUserWorkspace(workspace)`；对于算子外部的device地址计算，当前实现等价于`W = (uint8_t *)workspace + 16 MiB`。
 
 以下偏移均相对`W`。令`S0 = 0`，每个张量的起始偏移为`Oi = align32(Si)`，结束位置为`Si+1 = Oi + 元素数 × 元素字节数`：
 

@@ -173,7 +173,7 @@ aclnnStatus aclnnObfuscationSetupV2(
         <td>obfCoefficient(int32_t)</td>
         <td>输入</td>
         <td>进行混淆处理使用的混淆系数。</td>
-        <td>取值范围(0.0，1.0]，仅在cmd设置为1或2时需要填写有效值，否则填0.0。</td>
+        <td>取值范围(0.0, 1.0]，仅在cmd设置为1或2时需要填写有效值，否则填0.0。</td>
         <td>FLOAT</td>
         <td>-</td>
         <td>-</td>
